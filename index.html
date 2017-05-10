@@ -4,16 +4,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurants</title>
-    <link rel="stylesheet" type="text/css" href="css/default-styles.css">
-    <link rel="stylesheet" type="text/css" href="css/responsive.css">
+    <link rel="stylesheet" href="css/default-styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
   </head>
   <body>
     <nav id="drawer" class="dark_blue">
     <a id="menu">
     <div align="right">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z"></path>
-      </svg>
+      <img class="hamburger" src="img/hamburger.svg" alt="Click Here">
     </div>
     </a>
     <div class="options-box">
@@ -33,7 +31,7 @@
           </div>
         </div>
         <div class="list" id="list">
-          <input id="show-listings" type="button" value="Recenter Map">
+          <button data-bind="click: reCenter">Recenter Map</button>
         </div>
     </div>
     </nav>
@@ -44,7 +42,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
     <script src="javascript/responsive.js"></script>
     <script src="javascript/app.js"></script>
-    <script src="javascript/map.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyClOVaHtwYVKu6SUykvJj_Sq8xs0U6gRso&v=3&callback=initMap&libraries=places" onerror="mapLoadError()"></script>
   </body>
 </html>
