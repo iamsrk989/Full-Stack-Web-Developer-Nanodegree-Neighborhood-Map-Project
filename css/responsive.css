@@ -1,9 +1,9 @@
- 
+
       html, body {
         height: 100%;
         width: 100%;
       }
-      a#menu svg {
+      a#menu img {
         width: 40px;
         fill: #000;
       }
@@ -64,7 +64,7 @@
           z-index: 1;
         }
 
-        a#menu svg {
+        a#menu img {
           display: none;
         }
       }
@@ -74,4 +74,4 @@
         nav {
           width: 270px;
         }
-      } 
+      }
