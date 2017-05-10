@@ -25,7 +25,7 @@ var Location = function(data) {
             self.setAnimation(google.maps.Animation.BOUNCE);
             setTimeout(function () {
                 self.setAnimation(null);
-            }, 500);
+            }, 700);
             populateInfoWindow(this, largeInfowindow);
         });
 };
@@ -34,17 +34,17 @@ var Location = function(data) {
 function populateInfoWindow(marker, infowindow) {
     // Check to make sure the infowindow is not already opened on this marker.
     if (infowindow.marker != marker) {
-        var zomatoApiKey = "91f02ccf04d6069f3cd447517d9f83ff"
+        var zomatoApiKey = "91f02ccf04d6069f3cd447517d9f83ff";
         var zomatoUrl = 'https://developers.zomato.com/api/v2.1/restaurant?res_id='+
              marker.id + '&apikey=' + zomatoApiKey;
         $.getJSON(zomatoUrl).done(function(data) {
           var results = data;
-          var Url = results.url;
-          var street = results.location.address;
-          var city = results.location.city;
-          var cuisines = results.cuisines;
-          var img = results.thumb;
-          var rating = results.user_rating.aggregate_rating;
+          var Url = results.url || 'No Url Provided';
+          var street = results.location.address || 'Address Unavailable';
+          var city = results.location.city || '';
+          var cuisines = results.cuisines || 'Unavailable';
+          var img = results.thumb || '';
+          var rating = results.user_rating.aggregate_rating || 'Unavailable';
 
             infowindow.marker = marker;
             infowindow.close();
@@ -156,53 +156,76 @@ var appViewModel = function() {
         var restaurant = new Location(locations()[i]);
         self.markers.push(restaurant);
     }
-    //
-    self.searchByName = ko.computed(function() {
-        var restaurantName = self.search().toLowerCase();
-        for (var i = 0; i < self.markers().length; i++) {
-            if (self.markers()[i].title.toLowerCase().indexOf(restaurantName) >= 0) {
-                self.markers()[i].visible(true);
-                if (self.markers()[i].marker) {
-                    self.markers()[i].marker.setVisible(true);
-                }
-            } else {
-                self.markers()[i].visible(false);
-                if (self.markers()[i].marker) {
-                    self.markers()[i].marker.setVisible(false);
-                }
-            }
-        }
-    });
 
-    self.searchByCusine = ko.computed(function() {
-        var cuisineName = self.searching().toLowerCase();
-        for (var i = 0; i < self.markers().length; i++) {
-            if (self.markers()[i].cuisine.toLowerCase().indexOf(cuisineName) >= 0) {
-                self.markers()[i].visible(true);
-                if (self.markers()[i].marker) {
-                    self.markers()[i].marker.setVisible(true);
-                }
-            } else {
-                self.markers()[i].visible(false);
-                if (self.markers()[i].marker) {
-                    self.markers()[i].marker.setVisible(false);
+
+    // Search Using Both Name and Cuisine
+
+        self.searchboxes = ko.computed(function() {
+        return ko.utils.arrayFilter(self.markers(), function(r) {
+            var resName = self.search().toLowerCase();
+            var cusName = self.searching().toLowerCase();
+            var currentItemName = r.title.toLowerCase();
+            var currentItemCuisine = r.cuisine.toLowerCase();
+            if (resName && cusName) {
+                if ((currentItemName.indexOf(resName) >= 0) && (currentItemCuisine.indexOf(cusName) >= 0)) {
+                    r.visible(true);
+                    if (r.marker) {
+                        r.marker.setVisible(true);
+                    }
+                } else {
+                    r.visible(false);
+                    if (r.marker) {
+                        r.marker.setVisible(false);
+                    }
                 }
             }
-        }
+
+            if (resName && !cusName) {
+                if (currentItemName.indexOf(resName) >= 0) {
+                    r.visible(true);
+                    if (r.marker) {
+                        r.marker.setVisible(true);
+                    }
+                } else {
+                    r.visible(false);
+                    if (r.marker) {
+                        r.marker.setVisible(false);
+                    }
+                }
+            }
+
+            if (cusName && !resName) {
+                if (currentItemCuisine.indexOf(cusName) >= 0) {
+                    r.visible(true);
+                    if (r.marker) {
+                        r.marker.setVisible(true);
+                    }
+                } else {
+                    r.visible(false);
+                    if (r.marker) {
+                        r.marker.setVisible(false);
+                    }
+                }
+            }
+
+            if (!cusName && !resName) {
+                r.visible(true);
+                    if (r.marker) {
+                        r.marker.setVisible(true);
+                    }
+            }
+        });
     });
 
     self.infoPopup = function (locations) {
         google.maps.event.trigger(locations.marker, 'click');
     };
-    document.getElementById('show-listings').addEventListener('click', showListings);
 
-    function showListings() {
-      map.setCenter(myLocality.center);
-    }
+    self.reCenter = function() {
+        map.setCenter(myLocality.center);
+    };
 };
 
 function initMap() {
   ko.applyBindings(new appViewModel());
 }
-
-
